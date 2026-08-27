@@ -1,6 +1,5 @@
+import { api, useMutation, useQuery, useQueryClient } from '@repo/api-client';
 import type { UpdateUserProfileInput, UserProfileDto } from '@repo/shared';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-import { api } from '../client.js';
 
 export const USER_QUERY_KEYS = {
   profile: ['user', 'profile'] as const,
@@ -10,7 +9,7 @@ export function useProfileQuery() {
   return useQuery({
     queryKey: USER_QUERY_KEYS.profile,
     queryFn: () => api.get<UserProfileDto>('/users/profile'),
-    staleTime: 1000 * 60 * 5, // Cache valid for 5 minutes
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 }
 

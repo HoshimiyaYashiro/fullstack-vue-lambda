@@ -10,11 +10,13 @@ Hệ thống monorepo chuẩn enterprise được xây dựng trên nền tảng
 .
 ├── apps/
 │   ├── user-web/              # [Frontend] Vue 3 Client Application (Port 3000)
-│   │   ├── src/               # Router, Pinia, Views (Home, Profile)
+│   │   ├── src/pages/         # File-based routes (index, profile, [...path])
+│   │   ├── src/queries/       # TanStack Query hooks riêng của User (useProfileQuery, useLoginMutation)
 │   │   └── vite.config.ts     # Vite bundler & API proxy
 │   │
 │   ├── admin-web/             # [Frontend] Vue 3 Admin Dashboard (Port 3001)
-│   │   ├── src/               # Sidebar layout, User management, System metrics
+│   │   ├── src/pages/         # File-based routes (index, users, [...path])
+│   │   ├── src/queries/       # TanStack Query hooks riêng của Admin (useAdminMetricsQuery, useAdminUsersQuery)
 │   │   └── vite.config.ts     # Vite bundler & API proxy
 │   │
 │   └── api-lambda/            # [Backend] AWS Lambda Node.js (TypeScript)
@@ -29,7 +31,7 @@ Hệ thống monorepo chuẩn enterprise được xây dựng trên nền tảng
 ├── packages/
 │   ├── shared/                # [Shared] Types, DTOs, Zod Validation Schemas (Isomorphic cho cả FE & BE)
 │   ├── ui/                    # [Shared FE] Naive UI Design System, theme overrides, AppConfigProvider
-│   ├── api-client/            # [Shared FE] TanStack Query, HTTP client & reusable query hooks
+│   ├── api-client/            # [Infrastructure] HTTP Client Base (ApiHttpClient) & TanStack Query core
 │   └── tsconfig/              # [Shared] Cấu hình TypeScript chuẩn (Base, Vue, Node)
 │
 ├── biome.json                 # Cấu hình Biome Linter & Formatter
@@ -99,5 +101,8 @@ Thay thế ESLint + Prettier bằng **Biome**, tăng tốc độ phân tích cú
 ### 4. Tách Biệt Design System với Naive UI (`@repo/ui`)
 `naive-ui` được cấu hình tập trung tại `@repo/ui` cùng với Theme Overrides của doanh nghiệp (`AppConfigProvider`). Cả `user-web` và `admin-web` chỉ cần import từ `@repo/ui`, giúp đảm bảo tính đồng nhất giao diện và tránh cài đặt trùng lặp.
 
-### 5. Quản Lý Dữ Liệu Phản Ứng với TanStack Query (`@repo/api-client`)
-Package `@repo/api-client` đóng gói `@tanstack/vue-query`, HTTP Client và các custom query hooks (`useProfileQuery`, `useAdminUsersQuery`, `useAdminMetricsQuery`). Điều này giúp tái sử dụng cache logic giữa các app FE mà **không làm phình bundle của Backend Lambda** (vì `@repo/shared` vẫn giữ nguyên là TypeScript thuần).
+### 5. Tách Biệt Ranh Giới Nghiệp Vụ API & Query
+- Package `@repo/api-client` thuần túy cung cấp nền tảng **HTTP Client Base (`ApiHttpClient`)** và re-export các hooks lõi của `@tanstack/vue-query`. Hoàn toàn không chứa query nghiệp vụ cụ thể.
+- Toàn bộ query của User (`useProfileQuery`, `useLoginMutation`) được đặt tại `apps/user-web/src/queries/`.
+- Toàn bộ query của Admin (`useAdminMetricsQuery`, `useAdminUsersQuery`) được đặt tại `apps/admin-web/src/queries/`.
+- Điều này loại bỏ hoàn toàn nguy cơ rò rỉ các endpoint bảo mật của Admin vào bundle JS của User App.

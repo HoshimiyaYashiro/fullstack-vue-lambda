@@ -91,4 +91,8 @@ export class ApiHttpClient {
   }
 }
 
+export function createHttpClient(baseUrl?: string): ApiHttpClient {
+  return new ApiHttpClient(baseUrl);
+}
+
 export const api = new ApiHttpClient();

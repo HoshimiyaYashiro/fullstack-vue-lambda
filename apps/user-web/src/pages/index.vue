@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useProfileQuery } from '@repo/api-client';
 import { NAlert, NButton, NCard, NSpace, NSpin, NTag } from '@repo/ui';
+import { useProfileQuery } from '../queries/index.js';
 
 // Using TanStack Query for reactive data fetching & caching
 const { data: profile, isLoading, isError, error, refetch } = useProfileQuery();

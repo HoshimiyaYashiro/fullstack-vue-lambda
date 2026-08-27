@@ -1,6 +1,5 @@
+import { api, useMutation } from '@repo/api-client';
 import type { LoginInput, LoginResponseDto } from '@repo/shared';
-import { useMutation } from '@tanstack/vue-query';
-import { api } from '../client.js';
 
 export function useLoginMutation() {
   return useMutation({

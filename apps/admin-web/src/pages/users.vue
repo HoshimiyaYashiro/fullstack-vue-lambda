@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useAdminUsersQuery } from '@repo/api-client';
 import type { UserProfileDto } from '@repo/shared';
 import { type DataTableColumns, NButton, NCard, NDataTable, NInput, NSpace, NTag } from '@repo/ui';
 import { computed, h, ref } from 'vue';
+import { useAdminUsersQuery } from '../queries/index.js';
 
 const searchQuery = ref('');
 

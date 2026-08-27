@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAdminMetricsQuery } from '@repo/api-client';
 import { NButton, NCard, NGi, NGrid, NSpin, NStatistic, NTag } from '@repo/ui';
+import { useAdminMetricsQuery } from '../queries/index.js';
 
 // Reactive metrics query with TanStack Query (auto-refreshes every 30s)
 const { data: metrics, isLoading, isFetching, refetch } = useAdminMetricsQuery();
