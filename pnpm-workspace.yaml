@@ -1,0 +1,11 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+overrides:
+  esbuild: '^0.27.7'
+
+allowBuilds:
+  '@biomejs/biome': true
+  esbuild: true
+  vue-demi: true

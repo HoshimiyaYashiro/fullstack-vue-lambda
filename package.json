@@ -1,0 +1,31 @@
+{
+  "name": "fullstack-vue-lambda",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Enterprise Turborepo monorepo with Vue 3 (User & Admin apps), AWS Lambda Node.js backend, and Biome",
+  "packageManager": "pnpm@11.17.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:user": "turbo run dev --filter=@repo/user-web",
+    "dev:admin": "turbo run dev --filter=@repo/admin-web",
+    "dev:lambda": "turbo run dev --filter=@repo/api-lambda",
+    "build": "turbo run build",
+    "build:user": "turbo run build --filter=@repo/user-web",
+    "build:admin": "turbo run build --filter=@repo/admin-web",
+    "build:lambda": "turbo run build --filter=@repo/api-lambda",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "check": "turbo run type-check",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "turbo": "^2.4.4",
+    "typescript": "^5.8.2"
+  }
+}
