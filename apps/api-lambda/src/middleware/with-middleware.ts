@@ -27,7 +27,7 @@ export function withMiddleware(handler: HandlerFn) {
 
     try {
       // 2. Parse body safely
-      let parsedBody: unknown = undefined;
+      let parsedBody: unknown;
       if (event.body) {
         try {
           const raw = event.isBase64Encoded

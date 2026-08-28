@@ -1,4 +1,4 @@
-import { URL, fileURLToPath } from 'node:url';
+import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import VueRouter from 'unplugin-vue-router/vite';
 import { defineConfig } from 'vite';
@@ -14,6 +14,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  esbuild: {
+    target: 'esnext',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'esnext',
     },
   },
   build: {
