@@ -5,10 +5,11 @@
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": ".",
-    "types": ["unplugin-vue-router/client"],
+    "ignoreDeprecations": "6.0",
+    "types": ["vue-router/auto", "node", "vite/client", "vue-macros/macros-global"],
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "src/**/*.vue", "vite.config.ts"]
+  "include": ["src/**/*", "src/**/*.vue", "vite.config.ts", "playwright.config.ts", "e2e/**/*"]
 }

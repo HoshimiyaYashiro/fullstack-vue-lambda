@@ -44,9 +44,15 @@ pnpm-debug.log*
 coverage/
 *.lcov
 
+# Playwright Test Artifacts
+test-results/
+playwright-report/
+blob-report/
+
 # Agent Skills
 .agent/
 .agents/
 .opencode/
 .cursor/
-.github/
+.github/
+

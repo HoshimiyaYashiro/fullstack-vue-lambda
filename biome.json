@@ -14,6 +14,8 @@
       "!**/.turbo",
       "!**/coverage",
       "!**/typed-router.d.ts",
+      "!**/test-results",
+      "!**/playwright-report",
       "!**/.agents",
       "!**/.agent",
       "!**/.kiro",

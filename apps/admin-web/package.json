@@ -8,23 +8,30 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview --port 3001",
     "type-check": "vue-tsc --noEmit",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@repo/api-client": "workspace:*",
     "@repo/shared": "workspace:*",
     "@repo/ui": "workspace:*",
-    "pinia": "^2.3.1",
+    "@unhead/vue": "^3.4.0",
+    "@vueuse/core": "^14.4.0",
+    "pinia": "^4.0.3",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^5.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@repo/tsconfig": "workspace:*",
+    "@types/node": "^22.20.1",
     "@vitejs/plugin-vue": "^5.2.1",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2",
-    "unplugin-vue-router": "^0.19.2",
+    "typescript": "^6.0.3",
     "vite": "^6.2.0",
-    "vue-tsc": "^2.2.8"
+    "vue-macros": "^3.1.4",
+    "vue-tsc": "^3.3.11"
   }
 }
