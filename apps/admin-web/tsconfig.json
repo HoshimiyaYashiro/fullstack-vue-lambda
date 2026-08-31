@@ -11,5 +11,13 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "src/**/*.vue", "vite.config.ts", "playwright.config.ts", "e2e/**/*"]
+  "include": [
+    "src/**/*",
+    "src/**/*.vue",
+    "src/auto-imports.d.ts",
+    "src/components.d.ts",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "e2e/**/*"
+  ]
 }

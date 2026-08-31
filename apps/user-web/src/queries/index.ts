@@ -1,2 +1,2 @@
-export * from './use-auth.js';
-export * from './use-profile.js';
+export * from '../features/auth/queries/use-auth';
+export * from '../features/profile/queries/use-profile';
