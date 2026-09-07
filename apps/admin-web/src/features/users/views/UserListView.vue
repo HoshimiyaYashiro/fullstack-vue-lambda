@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import UserFilterBar from '../components/UserFilterBar.vue';
-import UserTable from '../components/UserTable.vue';
-import { useAdminUsersQuery } from '../queries/use-admin-users';
+import type { UserProfileDto } from '@repo/shared';
 
 const searchQuery = ref('');
-
 const { data, isLoading, refetch } = useAdminUsersQuery();
 
 const filteredUsers = computed(() => {
-  const users = data.value?.items ?? [
+  const users: UserProfileDto[] = data.value?.items ?? [
     {
       id: 'usr_admin_1',
       email: 'admin@enterprise.internal',
@@ -69,7 +65,7 @@ const filteredUsers = computed(() => {
         <div style="width: 320px;">
           <n-input
             v-model:value="searchQuery"
-            placeholder="Tìm kiếm theo tên, email, phòng ban..."
+            :placeholder="$t('users.searchPlaceholder')"
             clearable
           />
         </div>

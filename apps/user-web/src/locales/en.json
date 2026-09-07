@@ -1,0 +1,56 @@
+{
+  "portal": {
+    "appName": "Enterprise One",
+    "type": "User Portal",
+    "title": "User Portal Dashboard",
+    "fileBasedRouting": "File-based Routing",
+    "routeDescription": "Automated route: src/pages/index.vue (Managed by unplugin-vue-router)."
+  },
+  "nav": {
+    "home": "Home",
+    "profile": "Profile"
+  },
+  "account": {
+    "title": "Account Overview",
+    "loading": "Loading data from Lambda via TanStack Query...",
+    "loadError": "Failed to load data",
+    "fullName": "Full Name:",
+    "email": "Email:",
+    "department": "Department:",
+    "viewProfile": "View Profile Details",
+    "refetch": "Refetch Query",
+    "active": "Active"
+  },
+  "architecture": {
+    "title": "Enterprise Monorepo Architecture",
+    "cacheTitle": "TanStack Query Reactive Cache",
+    "cacheDesc": "Automatically caches profile for 5 minutes with background refetch, eliminating redundant Lambda API calls.",
+    "sharingTitle": "Shared Code Decoupling",
+    "sharingDesc": "UI uses {'@'}repo/ui, DTO uses {'@'}repo/shared, HTTP client uses {'@'}repo/api-client."
+  },
+  "profile": {
+    "title": "User Profile",
+    "routeTag": "Route: /profile",
+    "description": "Manage personal information. Automatically mapped from src/pages/profile.vue.",
+    "editTitle": "Edit Information",
+    "editSubtitle": "Data validated using shared {'@'}repo/shared schema",
+    "fullNameLabel": "Full Name",
+    "fullNamePlaceholder": "Enter full name...",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+84...",
+    "departmentLabel": "Department",
+    "departmentPlaceholder": "Department name...",
+    "back": "Back",
+    "saveChanges": "Save Changes",
+    "success": "Profile updated successfully (synced with Zod validation)!"
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "description": "The requested route does not exist on the system.",
+    "backHome": "Back to Home"
+  },
+  "actions": {
+    "logout": "Logout",
+    "language": "English"
+  }
+}

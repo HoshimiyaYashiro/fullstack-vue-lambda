@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { UserProfileDto } from '@repo/shared';
 import { type DataTableColumns, NButton, NTag } from '@repo/ui';
-import { h } from 'vue';
+import { computed, h } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
   users: UserProfileDto[];
   isLoading: boolean;
 }>();
 
-const columns: DataTableColumns<UserProfileDto> = [
+const { t } = useI18n();
+
+const columns = computed<DataTableColumns<UserProfileDto>>(() => [
   {
-    title: 'ID',
+    title: t('users.table.id'),
     key: 'id',
     render(row) {
       return h(
@@ -21,25 +24,25 @@ const columns: DataTableColumns<UserProfileDto> = [
     },
   },
   {
-    title: 'Họ và Tên',
+    title: t('users.table.fullName'),
     key: 'fullName',
     render(row) {
       return h('span', { style: { fontWeight: '600' } }, row.fullName);
     },
   },
   {
-    title: 'Email',
+    title: t('users.table.email'),
     key: 'email',
   },
   {
-    title: 'Phòng Ban',
+    title: t('users.table.department'),
     key: 'department',
     render(row) {
       return row.department || 'N/A';
     },
   },
   {
-    title: 'Vai Trò',
+    title: t('users.table.role'),
     key: 'role',
     render(row) {
       const type = row.role === 'admin' ? 'error' : row.role === 'manager' ? 'warning' : 'info';
@@ -47,7 +50,7 @@ const columns: DataTableColumns<UserProfileDto> = [
     },
   },
   {
-    title: 'Trạng Thái',
+    title: t('users.table.status'),
     key: 'status',
     render(row) {
       const type = row.status === 'active' ? 'success' : 'default';
@@ -55,18 +58,18 @@ const columns: DataTableColumns<UserProfileDto> = [
     },
   },
   {
-    title: 'Thao Tác',
+    title: t('users.table.actions'),
     key: 'actions',
     align: 'right',
     render() {
       return h(
         NButton,
         { size: 'small', secondary: true, type: 'primary' },
-        { default: () => 'Chỉnh Sửa' }
+        { default: () => t('users.table.edit') }
       );
     },
   },
-];
+]);
 </script>
 
 <template>

@@ -38,7 +38,8 @@
         "noUnusedVariables": "warn"
       },
       "style": {
-        "useConst": "error"
+        "useConst": "error",
+        "useVueMultiWordComponentNames": "off"
       }
     }
   },

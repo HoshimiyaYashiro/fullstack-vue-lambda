@@ -11,17 +11,25 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppBadge: typeof import('@repo/ui')['AppBadge']
+    AppButton: typeof import('@repo/ui')['AppButton']
+    AppConfigProvider: typeof import('@repo/ui')['AppConfigProvider']
+    AppNavbar: typeof import('@repo/ui')['AppNavbar']
+    DashboardMetrics: typeof import('./features/dashboard/components/DashboardMetrics.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NDataTable: typeof import('naive-ui')['NDataTable']
     NGi: typeof import('naive-ui')['NGi']
     NGrid: typeof import('naive-ui')['NGrid']
     NInput: typeof import('naive-ui')['NInput']
+    NResult: typeof import('naive-ui')['NResult']
     NSpace: typeof import('naive-ui')['NSpace']
     NSpin: typeof import('naive-ui')['NSpin']
     NStatistic: typeof import('naive-ui')['NStatistic']
     NTag: typeof import('naive-ui')['NTag']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UserFilterBar: typeof import('./features/users/components/UserFilterBar.vue')['default']
+    UserTable: typeof import('./features/users/components/UserTable.vue')['default']
   }
 }

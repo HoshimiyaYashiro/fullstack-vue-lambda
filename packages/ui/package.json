@@ -26,6 +26,8 @@
     "vue-tsc": "^3.3.11"
   },
   "dependencies": {
+    "@repo/shared": "workspace:*",
+    "@vueuse/core": "^14.4.0",
     "naive-ui": "^2.45.2"
   }
 }

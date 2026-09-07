@@ -15,17 +15,17 @@ defineEmits<{
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <div>
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <h1 class="page-title">Quản Lý Người Dùng</h1>
-          <n-tag type="info" size="small" round>Route: /users (File-based)</n-tag>
+          <h1 class="page-title">{{ $t('users.title') }}</h1>
+          <n-tag type="info" size="small" round>{{ $t('users.routeTag') }}</n-tag>
         </div>
-        <p class="page-description">Tự động ánh xạ từ <code>src/pages/users.vue</code> với Naive UI NDataTable.</p>
+        <p class="page-description">{{ $t('users.description') }}</p>
       </div>
       <n-space>
         <n-button secondary size="small" :loading="isLoading" @click="$emit('refresh')">
-          Làm Mới
+          {{ $t('users.refresh') }}
         </n-button>
         <n-button type="primary" size="small" @click="$emit('addUser')">
-          + Thêm Người Dùng
+          {{ $t('users.addUser') }}
         </n-button>
       </n-space>
     </div>

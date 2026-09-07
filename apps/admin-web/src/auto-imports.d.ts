@@ -8,6 +8,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const ADMIN_METRICS_QUERY_KEYS: typeof import('./features/dashboard/queries/use-admin-metrics').ADMIN_METRICS_QUERY_KEYS
+  const ADMIN_USERS_QUERY_KEYS: typeof import('./features/users/queries/use-admin-users').ADMIN_USERS_QUERY_KEYS
   const EffectScope: typeof import('vue').EffectScope
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
@@ -127,6 +129,9 @@ declare global {
   const unrefElement: typeof import('@vueuse/core').unrefElement
   const until: typeof import('@vueuse/core').until
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
+  const useAdminMetricsQuery: typeof import('./features/dashboard/queries/use-admin-metrics').useAdminMetricsQuery
+  const useAdminStore: typeof import('./stores/admin').useAdminStore
+  const useAdminUsersQuery: typeof import('./features/users/queries/use-admin-users').useAdminUsersQuery
   const useAnimate: typeof import('@vueuse/core').useAnimate
   const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
   const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
@@ -196,6 +201,7 @@ declare global {
   const useFullscreen: typeof import('@vueuse/core').useFullscreen
   const useGamepad: typeof import('@vueuse/core').useGamepad
   const useGeolocation: typeof import('@vueuse/core').useGeolocation
+  const useI18n: typeof import('vue-i18n').useI18n
   const useId: typeof import('vue').useId
   const useIdle: typeof import('@vueuse/core').useIdle
   const useImage: typeof import('@vueuse/core').useImage
@@ -325,6 +331,8 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly ADMIN_METRICS_QUERY_KEYS: UnwrapRef<typeof import('./features/dashboard/queries/use-admin-metrics')['ADMIN_METRICS_QUERY_KEYS']>
+    readonly ADMIN_USERS_QUERY_KEYS: UnwrapRef<typeof import('./features/users/queries/use-admin-users')['ADMIN_USERS_QUERY_KEYS']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
@@ -444,6 +452,9 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
+    readonly useAdminMetricsQuery: UnwrapRef<typeof import('./features/dashboard/queries/use-admin-metrics')['useAdminMetricsQuery']>
+    readonly useAdminStore: UnwrapRef<typeof import('./stores/admin')['useAdminStore']>
+    readonly useAdminUsersQuery: UnwrapRef<typeof import('./features/users/queries/use-admin-users')['useAdminUsersQuery']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
@@ -513,6 +524,7 @@ declare module 'vue' {
     readonly useFullscreen: UnwrapRef<typeof import('@vueuse/core')['useFullscreen']>
     readonly useGamepad: UnwrapRef<typeof import('@vueuse/core')['useGamepad']>
     readonly useGeolocation: UnwrapRef<typeof import('@vueuse/core')['useGeolocation']>
+    readonly useI18n: UnwrapRef<typeof import('vue-i18n')['useI18n']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useIdle: UnwrapRef<typeof import('@vueuse/core')['useIdle']>
     readonly useImage: UnwrapRef<typeof import('@vueuse/core')['useImage']>

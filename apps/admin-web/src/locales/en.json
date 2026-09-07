@@ -1,0 +1,61 @@
+{
+  "portal": {
+    "appName": "Enterprise One",
+    "type": "Admin Portal",
+    "role": "Super Admin",
+    "title": "Admin Dashboard",
+    "routeTag": "Route: / (File-based)",
+    "routeDescription": "Automatically mapped from src/pages/index.vue (Managed by unplugin-vue-router).",
+    "syncing": "Syncing...",
+    "refreshMetrics": "Refresh Metrics",
+    "queryingMetrics": "Querying metrics from Backend Lambda via TanStack Query..."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "User Management"
+  },
+  "metrics": {
+    "totalUsers": "Total Members",
+    "activeUsers": "Active Members",
+    "active": "Active",
+    "lambdaInvocations": "Lambda Invocations",
+    "systemHealth": "System Health",
+    "healthy": "HEALTHY"
+  },
+  "decoupling": {
+    "title": "Enterprise Decoupling Architecture",
+    "fileRoutingTitle": "File-based Routing",
+    "fileRoutingDesc": "Using unplugin-vue-router standardizes project architecture by file-system without missing routes.",
+    "uiTitle": "{'@'}repo/ui (Naive UI)",
+    "uiDesc": "Centralized Naive UI setup and theme management shared across apps without bundle duplication.",
+    "apiClientTitle": "{'@'}repo/api-client (TanStack Query)",
+    "apiClientDesc": "Manages all data fetching, caching, and background refetching, keeping Lambda backend decoupled from Vue."
+  },
+  "users": {
+    "title": "User Management",
+    "routeTag": "Route: /users (File-based)",
+    "description": "Automatically mapped from src/pages/users.vue with Naive UI NDataTable.",
+    "searchPlaceholder": "Search by name, email, department...",
+    "refresh": "Refresh",
+    "addUser": "+ Add User",
+    "table": {
+      "id": "ID",
+      "fullName": "Full Name",
+      "email": "Email",
+      "department": "Department",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit"
+    }
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "description": "The requested admin route does not exist.",
+    "backHome": "Back to Dashboard"
+  },
+  "actions": {
+    "logout": "Logout",
+    "language": "English"
+  }
+}

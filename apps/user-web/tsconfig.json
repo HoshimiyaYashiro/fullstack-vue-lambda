@@ -6,7 +6,14 @@
     "rootDir": "./",
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
-    "types": ["vue-router/auto", "node", "vite/client", "vue-macros/macros-global"],
+    "types": [
+      "vue-router/auto",
+      "node",
+      "vite/client",
+      "vue-macros/macros-global",
+      "vite-plugin-vue-layouts-next/client",
+      "@intlify/unplugin-vue-i18n/messages"
+    ],
     "paths": {
       "@/*": ["src/*"]
     }
@@ -17,6 +24,7 @@
     "src/auto-imports.d.ts",
     "src/components.d.ts",
     "vite.config.ts",
+    "uno.config.ts",
     "playwright.config.ts",
     "e2e/**/*"
   ]

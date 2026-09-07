@@ -1,0 +1,56 @@
+{
+  "portal": {
+    "appName": "Enterprise One",
+    "type": "User Portal",
+    "title": "Cổng Thông Tin Người Dùng",
+    "fileBasedRouting": "File-based Routing",
+    "routeDescription": "Route tự động: src/pages/index.vue (Quản lý bởi unplugin-vue-router)."
+  },
+  "nav": {
+    "home": "Trang Chủ",
+    "profile": "Hồ Sơ"
+  },
+  "account": {
+    "title": "Tổng Quan Tài Khoản",
+    "loading": "Đang tải dữ liệu từ Lambda qua TanStack Query...",
+    "loadError": "Không thể tải dữ liệu",
+    "fullName": "Họ và tên:",
+    "email": "Email:",
+    "department": "Phòng ban:",
+    "viewProfile": "Xem Chi Tiết Hồ Sơ",
+    "refetch": "Refetch Query",
+    "active": "Active"
+  },
+  "architecture": {
+    "title": "Kiến Trúc Enterprise Monorepo",
+    "cacheTitle": "TanStack Query Reactive Cache",
+    "cacheDesc": "Tự động cache profile 5 phút, tự refresh ngầm trong nền, giảm thiểu gọi API Lambda dư thừa.",
+    "sharingTitle": "Chia Sẻ Mã Dùng Chung",
+    "sharingDesc": "Giao diện dùng {'@'}repo/ui, DTO dùng {'@'}repo/shared, HTTP client dùng {'@'}repo/api-client."
+  },
+  "profile": {
+    "title": "Hồ Sơ Cá Nhân",
+    "routeTag": "Route: /profile",
+    "description": "Quản lý thông tin cá nhân. Tự động ánh xạ từ file src/pages/profile.vue.",
+    "editTitle": "Chỉnh Sửa Thông Tin",
+    "editSubtitle": "Dữ liệu được validate bằng schema dùng chung {'@'}repo/shared",
+    "fullNameLabel": "Họ và tên",
+    "fullNamePlaceholder": "Nhập họ và tên...",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "+84...",
+    "departmentLabel": "Phòng ban",
+    "departmentPlaceholder": "Tên phòng ban...",
+    "back": "Quay Lại",
+    "saveChanges": "Lưu Thay Đổi",
+    "success": "Hồ sơ đã được cập nhật thành công (đồng bộ validation Zod)!"
+  },
+  "notFound": {
+    "title": "404 - Không Tìm Thấy Trang",
+    "description": "Đường dẫn bạn yêu cầu không tồn tại trên hệ thống.",
+    "backHome": "Trở Về Trang Chủ"
+  },
+  "actions": {
+    "logout": "Đăng Xuất",
+    "language": "Tiếng Việt"
+  }
+}

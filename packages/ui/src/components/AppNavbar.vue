@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
   appName: string;
-  portalType?: 'User Portal' | 'Admin Portal';
+  portalType?: string;
 }
 
 withDefaults(defineProps<Props>(), {

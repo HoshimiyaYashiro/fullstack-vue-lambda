@@ -11,12 +11,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    NAlert: typeof import('naive-ui')['NAlert']
+    AccountOverviewCard: typeof import('./features/account/components/AccountOverviewCard.vue')['default']
+    AppButton: typeof import('@repo/ui')['AppButton']
+    AppConfigProvider: typeof import('@repo/ui')['AppConfigProvider']
+    AppNavbar: typeof import('@repo/ui')['AppNavbar']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
-    NSpace: typeof import('naive-ui')['NSpace']
-    NSpin: typeof import('naive-ui')['NSpin']
-    NTag: typeof import('naive-ui')['NTag']
+    NResult: typeof import('naive-ui')['NResult']
+    ProfileForm: typeof import('./features/profile/components/ProfileForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

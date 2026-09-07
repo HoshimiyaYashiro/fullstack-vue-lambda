@@ -1,0 +1,61 @@
+{
+  "portal": {
+    "appName": "Enterprise One",
+    "type": "Admin Portal",
+    "role": "Super Admin",
+    "title": "Bảng Điều Khiển Quản Trị",
+    "routeTag": "Route: / (File-based)",
+    "routeDescription": "Tự động ánh xạ từ src/pages/index.vue (Quản lý bởi unplugin-vue-router).",
+    "syncing": "Đang đồng bộ...",
+    "refreshMetrics": "Làm Mới Số Liệu",
+    "queryingMetrics": "Đang truy vấn metrics từ Backend Lambda qua TanStack Query..."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Quản Lý Users"
+  },
+  "metrics": {
+    "totalUsers": "Tổng Thành Viên",
+    "activeUsers": "Thành Viên Hoạt Động",
+    "active": "Active",
+    "lambdaInvocations": "Lambda Invocations",
+    "systemHealth": "Trạng Thái Hệ Thống",
+    "healthy": "HEALTHY"
+  },
+  "decoupling": {
+    "title": "Cấu Trúc Tách Biệt Doanh Nghiệp (Enterprise Decoupling)",
+    "fileRoutingTitle": "File-based Routing",
+    "fileRoutingDesc": "Sử dụng unplugin-vue-router giúp cấu trúc dự án chuẩn hóa theo file-system, không lo thiếu hoặc quên đăng ký routes thủ công.",
+    "uiTitle": "{'@'}repo/ui (Naive UI)",
+    "uiDesc": "Cài đặt Naive UI và quản lý Theme tập trung. Cả User App và Admin App cùng dùng chung components mà không bị trùng lặp bundle.",
+    "apiClientTitle": "{'@'}repo/api-client (TanStack Query)",
+    "apiClientDesc": "Quản lý toàn bộ data fetching, query caching, background refetching. Đảm bảo Lambda backend hoàn toàn không dính bất kỳ Vue dependency nào."
+  },
+  "users": {
+    "title": "Quản Lý Người Dùng",
+    "routeTag": "Route: /users (File-based)",
+    "description": "Tự động ánh xạ từ src/pages/users.vue với Naive UI NDataTable.",
+    "searchPlaceholder": "Tìm kiếm theo tên, email, phòng ban...",
+    "refresh": "Làm Mới",
+    "addUser": "+ Thêm Người Dùng",
+    "table": {
+      "id": "ID",
+      "fullName": "Họ và Tên",
+      "email": "Email",
+      "department": "Phòng Ban",
+      "role": "Vai Trò",
+      "status": "Trạng Thái",
+      "actions": "Thao Tác",
+      "edit": "Chỉnh Sửa"
+    }
+  },
+  "notFound": {
+    "title": "404 - Trang Không Tồn Tại",
+    "description": "Đường dẫn quản trị bạn yêu cầu không tồn tại.",
+    "backHome": "Trở Về Bảng Điều Khiển"
+  },
+  "actions": {
+    "logout": "Đăng Xuất",
+    "language": "Tiếng Việt"
+  }
+}

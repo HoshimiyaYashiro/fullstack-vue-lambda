@@ -16,15 +16,37 @@ This document defines mandatory guidelines and constraints that any AI Agent mus
 This project is an enterprise monorepo managed with **Turborepo** and **pnpm workspaces**:
 
 ### Applications (`apps/`)
-- `apps/admin-web`: Back-office admin dashboard built with Vue 3, Naive UI, and Vite.
-- `apps/user-web`: Customer-facing web application built with Vue 3 and Vite.
-- `apps/api-lambda`: Serverless backend running on AWS Lambda (Node.js & TypeScript).
+- `apps/admin-web`: Back-office admin dashboard.
+  - **Tech Stack**: Vue 3 (Composition API), TypeScript, Vite, Naive UI, UnoCSS (`presetWind3`), Vue Router (`unplugin-vue-router`), Layouts (`vite-plugin-vue-layouts-next`), I18n (`@intlify/unplugin-vue-i18n`, `vue-i18n`), TanStack Query, Pinia, AWS Amplify (`aws-amplify`), Vue Macros (`vue-macros`), `@unhead/vue`, `@vueuse/core`, Playwright.
+- `apps/user-web`: Customer-facing web application.
+  - **Tech Stack**: Vue 3 (Composition API), TypeScript, Vite, Naive UI, UnoCSS (`presetWind3`), Vue Router (`unplugin-vue-router`), Layouts (`vite-plugin-vue-layouts-next`), I18n (`@intlify/unplugin-vue-i18n`, `vue-i18n`), TanStack Query, Pinia, AWS Amplify (`aws-amplify`), Vue Macros (`vue-macros`), `@unhead/vue`, `@vueuse/core`, Playwright.
+- `apps/api-lambda`: Serverless backend running on AWS Lambda.
+  - **Tech Stack**: Node.js (>=20.0), TypeScript, AWS Lambda (`@types/aws-lambda`), `tsup` (ESM bundler), `tsx` (local development server), Zod runtime validation.
 
 ### Shared Packages (`packages/`)
-- `packages/ui`: Shared UI component library consumed by frontend applications.
-- `packages/shared`: Common utilities, constants, data schemas, and shared TypeScript types.
-- `packages/api-client`: Typed API client / SDK for consuming Lambda endpoints.
-- `packages/tsconfig`: Centralized, shared TypeScript configurations (`tsconfig.json`).
+- `packages/ui`: Shared UI component library (`AppButton`, `AppCard`, `AppInput`, `AppNavbar`, `AppBadge`, `AppConfigProvider`) and design tokens (`styles/theme.css`) consumed by frontend applications.
+- `packages/shared`: Common utilities, HTTP/domain constants, shared Zod data schemas (`auth.schema.ts`, `user.schema.ts`), and isomorphic TypeScript types (`UserProfileDto`, `ApiResponse`, etc.).
+- `packages/api-client`: Typed API client / SDK for consuming Lambda endpoints, powered by TanStack Vue Query (`@tanstack/vue-query`) and typed HTTP fetch wrappers.
+- `packages/tsconfig`: Centralized, shared TypeScript configurations (`base.json`, `vue.json`, `node.json`).
+
+### Monorepo Structure Overview
+
+```
+fullstack-vue-lambda/
+├── apps/
+│   ├── admin-web/             # Back-office admin web application (Port 3001)
+│   ├── user-web/              # Customer portal web application (Port 3000)
+│   └── api-lambda/            # Serverless AWS Lambda backend handlers (Port 4000)
+├── packages/
+│   ├── api-client/            # Shared TanStack Query client & HTTP SDK
+│   ├── shared/                # Shared types, Zod schemas, constants
+│   ├── tsconfig/              # Centralized tsconfig configurations
+│   └── ui/                    # Reusable Vue component library & theme CSS
+├── biome.json                 # Unified Biome linter & formatter configuration
+├── pnpm-workspace.yaml        # pnpm monorepo workspace definition
+├── turbo.json                 # Turborepo task pipeline configuration
+└── AGENTS.md                  # Global Agent guidelines & SDLC rules
+```
 
 ---
 
