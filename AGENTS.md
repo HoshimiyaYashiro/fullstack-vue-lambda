@@ -147,7 +147,7 @@ Project memory keeps persistent guidance (steering, specs notes, component docs)
     - `/kiro-spec-init "description"`
     - `/kiro-spec-requirements {feature}`
     - `/kiro-validate-gap {feature}` (optional: for existing codebase)
-    - `/kiro-spec-design {feature} [-y]`
+    - `/kiro-spec-design {feature} [-y]` *(Requires user discussion on Basic UI, OpenAPI, and DBML)*
     - `/kiro-validate-design {feature}` (optional: design review)
     - `/kiro-spec-tasks {feature} [-y]`
   - Multi-spec: `/kiro-spec-batch` — creates all specs from roadmap.md in parallel by dependency wave
@@ -156,6 +156,20 @@ Project memory keeps persistent guidance (steering, specs notes, component docs)
   - With task numbers: manual mode (selected tasks in main context, still reviewer-gated before completion)
   - `/kiro-validate-impl {feature}` (standalone re-validation)
 - Progress check: `/kiro-spec-status {feature}` (use anytime)
+
+## Spec Design Requirements (`/kiro-spec-design`)
+
+When executing `/kiro-spec-design` (or drafting the design phase of a specification), the agent **MUST collaborate and explicitly discuss with the user** the following three mandatory architectural pillars before finalizing `design.md`:
+
+1. **Basic UI / UX Design**:
+   - Screen layouts, wireframes, component hierarchy, user interaction flows, and UI states (loading, error, empty).
+   - Component reuse strategy (leveraging `@repo/ui` and Naive UI).
+2. **Standard API Design (OpenAPI Specification)**:
+   - RESTful endpoint contracts formatted according to OpenAPI 3.x specifications (`paths`, HTTP methods, request bodies, query/path parameters, HTTP status codes, error responses, and headers).
+   - Reusable DTO schemas aligned with `@repo/shared` and runtime validation rules.
+3. **Database Schema Design (DBML)**:
+   - Data models, primary keys, relationships (`>`, `<`, `-`), indexes, enums, constraints, and audit fields documented in standard **DBML** (Database Markup Language) syntax.
+   - Clear distinction between operational storage and caching layers.
 
 ## Skills Structure
 Skills are located in `.opencode/skills/kiro-*/SKILL.md`
@@ -170,6 +184,7 @@ Skills are located in `.opencode/skills/kiro-*/SKILL.md`
 ## Development Rules
 - 3-phase approval workflow: Requirements → Design → Tasks → Implementation
 - Human review required each phase; use `-y` only for intentional fast-track
+- **Design Collaboration Gate**: In `/kiro-spec-design`, always discuss and align with the user on: (1) Basic UI layouts & user flows, (2) OpenAPI-compliant API design, and (3) DBML-compliant database schema.
 - Keep steering current and verify alignment with `/kiro-spec-status`
 - Follow the user's instructions precisely, and within that scope act autonomously: gather the necessary context and complete the requested work end-to-end in this run, asking questions only when essential information is missing or the instructions are critically ambiguous.
 
