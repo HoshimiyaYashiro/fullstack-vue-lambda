@@ -1,0 +1,22 @@
+{
+  "feature_name": "admin-cognito-auth",
+  "created_at": "2026-09-09T12:00:00+07:00",
+  "updated_at": "2026-09-09T17:23:05+07:00",
+  "language": "en",
+  "phase": "requirements-generated",
+  "approvals": {
+    "requirements": {
+      "generated": true,
+      "approved": false
+    },
+    "design": {
+      "generated": false,
+      "approved": false
+    },
+    "tasks": {
+      "generated": false,
+      "approved": false
+    }
+  },
+  "ready_for_implementation": false
+}
