@@ -39,6 +39,6 @@ packages/shared/
 ## 3. Best Practices & Rules
 
 1. **Zero Runtime Dependencies**: Keep dependencies minimal. Only isomorphic, environment-agnostic libraries like `zod` are allowed. Never import Node.js-only (`node:*`, `fs`, `path`) or Browser-only (`window`, `document`) modules.
-2. **Single Source of Truth**: All cross-cutting types (DTOs, HTTP responses) and validation rules MUST be defined here and consumed by both `apps/api-lambda` and frontend applications (`apps/admin-web`, `apps/user-web`).
+2. **Single Source of Truth**: All cross-cutting types (DTOs, HTTP responses) and validation rules MUST be defined here and consumed by both `apps/worker-lambda` and frontend applications (`apps/admin-web`, `apps/user-web`).
 3. **Zod Infer Types**: Derive TypeScript types directly from Zod schemas when applicable (e.g. `type LoginInput = z.infer<typeof loginSchema>`) to maintain type-schema synchronization.
 

@@ -20,10 +20,13 @@ This project is an enterprise monorepo managed with **Turborepo** and **pnpm wor
   - **Tech Stack**: Vue 3 (Composition API), TypeScript, Vite, Naive UI, UnoCSS (`presetWind3`), Vue Router (`unplugin-vue-router`), Layouts (`vite-plugin-vue-layouts-next`), I18n (`@intlify/unplugin-vue-i18n`, `vue-i18n`), TanStack Query, Pinia, AWS Amplify (`aws-amplify`), Vue Macros (`vue-macros`), `@unhead/vue`, `@vueuse/core`, Playwright.
 - `apps/user-web`: Customer-facing web application.
   - **Tech Stack**: Vue 3 (Composition API), TypeScript, Vite, Naive UI, UnoCSS (`presetWind3`), Vue Router (`unplugin-vue-router`), Layouts (`vite-plugin-vue-layouts-next`), I18n (`@intlify/unplugin-vue-i18n`, `vue-i18n`), TanStack Query, Pinia, AWS Amplify (`aws-amplify`), Vue Macros (`vue-macros`), `@unhead/vue`, `@vueuse/core`, Playwright.
-- `apps/api-lambda`: Serverless backend running on AWS Lambda.
+- `apps/worker-lambda`: Serverless backend running on AWS Lambda.
   - **Tech Stack**: Node.js (>=20.0), TypeScript, AWS Lambda (`@types/aws-lambda`), `tsup` (ESM bundler), `tsx` (local development server), Zod runtime validation.
+- `apps/worker-fargate`: Asynchronous background daemon and batch processor running on AWS ECS Fargate.
+  - **Tech Stack**: Node.js (>=20.0), TypeScript, AWS SDK v3 (SQS, EventBridge, S3), `tsup`, Drizzle ORM persistent pool connection.
 
 ### Shared Packages (`packages/`)
+- `packages/database`: Centralized database package (`@repo/database`) containing multi-tenant Drizzle ORM schema, migrations, and connection factories for both ephemeral Serverless Lambda (`createLambdaClient`) and persistent Fargate pool (`createFargateClient`).
 - `packages/ui`: Shared UI component library (`AppButton`, `AppCard`, `AppInput`, `AppNavbar`, `AppBadge`, `AppConfigProvider`) and design tokens (`styles/theme.css`) consumed by frontend applications.
 - `packages/shared`: Common utilities, HTTP/domain constants, shared Zod data schemas (`auth.schema.ts`, `user.schema.ts`), and isomorphic TypeScript types (`UserProfileDto`, `ApiResponse`, etc.).
 - `packages/api-client`: Typed API client / SDK for consuming Lambda endpoints, powered by TanStack Vue Query (`@tanstack/vue-query`) and typed HTTP fetch wrappers.
@@ -36,9 +39,11 @@ fullstack-vue-lambda/
 ├── apps/
 │   ├── admin-web/             # Back-office admin web application (Port 3001)
 │   ├── user-web/              # Customer portal web application (Port 3000)
-│   └── api-lambda/            # Serverless AWS Lambda backend handlers (Port 4000)
+│   ├── worker-fargate/        # Long-running background daemon on AWS ECS Fargate
+│   └── worker-lambda/         # Serverless AWS Lambda backend handlers (Port 4000)
 ├── packages/
 │   ├── api-client/            # Shared TanStack Query client & HTTP SDK
+│   ├── database/              # Shared Aurora PostgreSQL schema, Drizzle ORM & client factories
 │   ├── shared/                # Shared types, Zod schemas, constants
 │   ├── tsconfig/              # Centralized tsconfig configurations
 │   └── ui/                    # Reusable Vue component library & theme CSS
@@ -57,7 +62,7 @@ fullstack-vue-lambda/
   - Business logic, schemas, and helpers used across packages belong in `packages/shared`.
   - Reusable visual components belong in `packages/ui`.
 - **Backend Decoupling**:
-  - `apps/api-lambda` must remain strictly decoupled from any frontend dependencies (Vue, Naive UI, router, DOM APIs).
+  - `apps/worker-lambda` must remain strictly decoupled from any frontend dependencies (Vue, Naive UI, router, DOM APIs).
   - Frontend apps communicate with the backend exclusively via `packages/api-client`.
 
 ---
@@ -100,10 +105,15 @@ fullstack-vue-lambda/
 | **Dev User Web** | `pnpm dev:user` |
 | **Dev Admin Web** | `pnpm dev:admin` |
 | **Dev Lambda Backend** | `pnpm dev:lambda` |
+| **Dev Fargate Worker** | `pnpm dev:fargate` |
 | **Build All** | `pnpm build` |
 | **Build User Web** | `pnpm build:user` |
 | **Build Admin Web** | `pnpm build:admin` |
-| **Build Lambda** | `pnpm build:lambda` |
+| **Build Lambda (Full Suite)** | `pnpm build:lambda` |
+| **Build Lambda (All Handlers)** | `pnpm build:lambda:handlers` |
+| **Build Lambda (Single Handler)**| `pnpm build:lambda:handler <handler-name>` |
+| **Build Lambda Layer** | `pnpm build:lambda:layer` |
+| **Build Fargate Worker** | `pnpm build:fargate` |
 | **Lint & Format Check** | `pnpm lint` |
 | **Lint & Format Auto-fix** | `pnpm lint:fix` |
 | **Type Check** | `pnpm check` |

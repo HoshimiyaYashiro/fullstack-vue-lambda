@@ -6,7 +6,7 @@ Enterprise monorepo managed with **Turborepo** and **pnpm workspaces**, employin
 
 ```
 [user-web] (Port 3000)  ───┐
-                            ├───> [@repo/api-client] ───> [@repo/shared] <─── [api-lambda] (Port 4000)
+                            ├───> [@repo/api-client] ───> [@repo/shared] <─── [worker-lambda] (Port 4000)
 [admin-web] (Port 3001) ───┘                ▲
        │                                    │
        └──────────> [@repo/ui] ─────────────┘

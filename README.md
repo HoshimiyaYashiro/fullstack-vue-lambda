@@ -19,7 +19,7 @@ Hệ thống monorepo chuẩn enterprise được xây dựng trên nền tảng
 │   │   ├── src/queries/       # TanStack Query hooks riêng của Admin (useAdminMetricsQuery, useAdminUsersQuery)
 │   │   └── vite.config.ts     # Vite bundler & API proxy
 │   │
-│   └── api-lambda/            # [Backend] AWS Lambda Node.js (TypeScript)
+│   └── worker-lambda/         # [Backend] AWS Lambda Node.js (TypeScript)
 │       ├── src/
 │       │   ├── core/          # Errors, Response formatters, Types
 │       │   ├── middleware/    # withMiddleware, Zod body/query validators

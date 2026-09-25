@@ -1,0 +1,201 @@
+#!/usr/bin/env node
+
+/**
+ * Floci Local Cloud Runner
+ * Cross-platform orchestrator supporting both Docker Compose and Native Floci CLI modes.
+ */
+
+import { execSync, spawn, spawnSync } from 'node:child_process';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const FLOCI_DIR = path.resolve(__dirname, '..');
+const COMPOSE_FILE = path.join(FLOCI_DIR, 'docker-compose.yml');
+const INIT_DIR = path.join(FLOCI_DIR, 'init');
+
+const action = process.argv[2] || 'up';
+
+function isDockerRunning() {
+  try {
+    const res = spawnSync('docker', ['info'], { stdio: 'ignore' });
+    return res.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function isFlociCliAvailable() {
+  try {
+    const cmd = process.platform === 'win32' ? 'where floci' : 'which floci';
+    execSync(cmd, { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function checkHealth(endpoint = 'http://localhost:4566', timeoutMs = 25000) {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const req = http.get(endpoint, (_res) => {
+        clearInterval(interval);
+        resolve(true);
+      });
+      req.on('error', () => {
+        if (Date.now() - startTime > timeoutMs) {
+          clearInterval(interval);
+          resolve(false);
+        }
+      });
+      req.setTimeout(1000, () => req.destroy());
+    }, 1000);
+  });
+}
+
+const SEED_SCRIPT = path.join(__dirname, 'seed.mjs');
+
+async function runSeedScripts() {
+  console.log('\n[Floci Seed] Running universal Node.js seeder (Windows/macOS/Linux)...');
+  try {
+    spawnSync(process.execPath, [SEED_SCRIPT], {
+      stdio: 'inherit',
+      env: process.env,
+    });
+  } catch (err) {
+    console.error(`[Floci Seed Error] Failed to run seed.mjs: ${err.message}`);
+  }
+}
+
+async function handleUp() {
+  console.log('===============================================================');
+  console.log('       Floci Local Cloud Orchestrator (Dual-Mode)             ');
+  console.log('===============================================================\n');
+
+  const hasDocker = isDockerRunning();
+
+  if (hasDocker) {
+    console.log('[Mode: Docker Compose] Active Docker engine detected.');
+    console.log('[Mode: Docker Compose] Starting Floci container with full 11-service parity...');
+
+    const upProcess = spawn('docker', ['compose', '-f', COMPOSE_FILE, 'up', '-d'], {
+      stdio: 'inherit',
+    });
+
+    upProcess.on('close', async (code) => {
+      if (code !== 0) {
+        console.error(`[Error] Docker compose failed with exit code ${code}`);
+        process.exit(code);
+      }
+
+      console.log('\n[Floci Health] Waiting for Floci gateway on port 4566...');
+      const healthy = await checkHealth();
+
+      if (healthy) {
+        console.log('\n✅ Floci is READY on port 4566!');
+        console.log('   - AWS Gateway: http://localhost:4566');
+        console.log('   - Aurora PostgreSQL: localhost:5432 (database: enterprise_db)');
+        console.log('   - Initialization hooks (/etc/floci/init/ready.d) loaded automatically.\n');
+      } else {
+        console.warn('⚠️ Floci did not respond in time. Check logs using: pnpm floci:logs\n');
+      }
+    });
+  } else {
+    console.warn('[Notice] Docker engine is NOT detected on this machine.');
+    const hasCli = isFlociCliAvailable();
+
+    if (hasCli) {
+      console.log('[Mode: Native Floci CLI] Found "floci" executable in system PATH.');
+      console.log('[Mode: Native Floci CLI] Starting in-process services...');
+      console.log('   -> S3, DynamoDB, Cognito, EventBridge, CloudWatch, SES, SNS are active.');
+      console.log('   -> Lambda: Run "pnpm dev:lambda" for direct Node.js execution.');
+      console.log('   -> Aurora: Connect to a local PostgreSQL instance at localhost:5432.\n');
+
+      const cliProcess = spawn('floci', ['start'], { stdio: 'inherit', detached: true });
+      cliProcess.unref();
+
+      console.log('[Floci Health] Waiting for Floci CLI on port 4566...');
+      const healthy = await checkHealth();
+
+      if (healthy) {
+        console.log('\n✅ Floci CLI is running on http://localhost:4566!');
+        await runSeedScripts();
+      } else {
+        console.warn('⚠️ Floci CLI did not respond in time.');
+      }
+    } else {
+      console.error('\n❌ Neither Docker nor Floci CLI is available on your machine.\n');
+      console.log('Please choose one of the following options to enable the local cloud:');
+      console.log('-------------------------------------------------------------------');
+      console.log('Option 1 (Recommended for full 11-service parity):');
+      console.log('   Install Docker Desktop, Rancher Desktop, or Podman Desktop.');
+      console.log('   Download: https://www.docker.com/products/docker-desktop/');
+      console.log('             https://rancherdesktop.io/');
+      console.log('             https://podman-desktop.io/\n');
+      console.log('Option 2 (Native lightweight CLI mode - no Docker required):');
+      console.log('   Windows (PowerShell): iwr https://floci.io/install.ps1 | iex');
+      console.log('   macOS / Linux:        curl -fsSL https://floci.io/install.sh | sh\n');
+      process.exit(1);
+    }
+  }
+}
+
+function handleDown() {
+  if (isDockerRunning()) {
+    console.log('[Floci Down] Stopping Docker compose...');
+    spawnSync('docker', ['compose', '-f', COMPOSE_FILE, 'down'], { stdio: 'inherit' });
+  }
+
+  if (isFlociCliAvailable()) {
+    console.log('[Floci Down] Stopping Floci CLI if running...');
+    spawnSync('floci', ['stop'], { stdio: 'ignore' });
+  }
+
+  console.log('✅ Floci stopped successfully.');
+}
+
+function handleLogs() {
+  if (isDockerRunning()) {
+    spawn('docker', ['compose', '-f', COMPOSE_FILE, 'logs', '-f'], { stdio: 'inherit' });
+  } else if (isFlociCliAvailable()) {
+    spawn('floci', ['logs'], { stdio: 'inherit' });
+  } else {
+    console.error('No running Floci instance found.');
+  }
+}
+
+function handleDoctor() {
+  console.log('===============================================================');
+  console.log('                Floci Environment Diagnostics                  ');
+  console.log('===============================================================\n');
+
+  console.log(`OS:               ${process.platform} (${process.arch})`);
+  console.log(`Node.js:          ${process.version}`);
+  console.log(`Docker Running:   ${isDockerRunning() ? 'YES ✅' : 'NO ❌'}`);
+  console.log(`Floci CLI Found:  ${isFlociCliAvailable() ? 'YES ✅' : 'NO ❌'}`);
+  console.log(`Compose File:     ${COMPOSE_FILE}`);
+  console.log(`Init Scripts:     ${INIT_DIR}\n`);
+}
+
+switch (action) {
+  case 'up':
+    handleUp();
+    break;
+  case 'down':
+    handleDown();
+    break;
+  case 'logs':
+    handleLogs();
+    break;
+  case 'seed':
+    runSeedScripts();
+    break;
+  case 'doctor':
+    handleDoctor();
+    break;
+  default:
+    console.log(`Unknown action: ${action}. Use: up, down, logs, seed, doctor`);
+}

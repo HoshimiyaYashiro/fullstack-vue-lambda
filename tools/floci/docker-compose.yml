@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  floci:
+    container_name: enterprise-floci
+    image: floci/floci:latest-compat
+    ports:
+      - '4566:4566'            # Standard AWS wire-protocol gateway
+      - '5432:5432'            # Direct Aurora PostgreSQL port mapping
+    environment:
+      - FLOCI_STORAGE_MODE=persistent
+      - FLOCI_SERVICES_LAMBDA_HOT_RELOAD_ENABLED=true
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_DEFAULT_REGION=ap-southeast-1
+      - DEFAULT_REGION=ap-southeast-1
+      - LAMBDA_EXECUTOR=docker
+      - LAMBDA_DOCKER_NETWORK=enterprise-floci-network
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=enterprise_db
+      - DEBUG=1
+    volumes:
+      # Docker socket required for Lambda and Fargate container execution
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Floci persistence layer
+      - ./data:/app/data
+      # Initialization hooks executed once all AWS services are online
+      - ./init:/etc/floci/init/ready.d
+    networks:
+      - enterprise-floci-network
+
+networks:
+  enterprise-floci-network:
+    name: enterprise-floci-network
+    driver: bridge

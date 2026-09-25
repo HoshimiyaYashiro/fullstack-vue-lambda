@@ -3,11 +3,11 @@
 ## Problem
 The Admin Dashboard (`admin-web`) serves two distinct administrative tiers across multiple business organizations: **System Operators** (platform super-administrators overseeing the entire ecosystem) and **Enterprise Tenant Administrators** (business admins managing operations strictly within their own enterprise boundary). The system requires robust multi-tenant data isolation and identity federation using AWS Cognito User Pools, backed by an Amazon Aurora PostgreSQL relational store, along with automated AWS CDK (Node.js/TypeScript) Infrastructure as Code.
 
-Currently, `apps/api-lambda` relies on an in-memory mock repository without multi-tenancy support or real JWT verification, `apps/admin-web` lacks multi-tenant auth interfaces, OTP verification challenges, and tenant scoping, and no IaC stack exists to provision the multi-tenant Cognito user directory.
+Currently, `apps/worker-lambda` relies on an in-memory mock repository without multi-tenancy support or real JWT verification, `apps/admin-web` lacks multi-tenant auth interfaces, OTP verification challenges, and tenant scoping, and no IaC stack exists to provision the multi-tenant Cognito user directory.
 
 ## Current State
 - `apps/admin-web`: Lacks authentication views, Email OTP challenge handling, multi-tenant state management, and route navigation guards.
-- `apps/api-lambda`: Handlers query mock data without tenant boundary checks. `users.repository.ts` has no tenant isolation or Aurora persistence.
+- `apps/worker-lambda`: Handlers query mock data without tenant boundary checks. `users.repository.ts` has no tenant isolation or Aurora persistence.
 - `packages/shared`: Contains basic user schemas and roles, but lacks multi-tenant metadata (`tenantId`), custom claims, and tenant authorization contracts.
 - Infrastructure: No AWS CDK stack exists to deploy multi-tenant Cognito User Pools with custom attributes and role groups.
 
@@ -31,7 +31,7 @@ Currently, `apps/api-lambda` relies on an in-memory mock repository without mult
 ## Scope
 - **In**:
   - AWS CDK (TypeScript / Node.js) stack provisioning Cognito User Pool with `custom:tenant_id`, Email OTP MFA, SPA Client, and groups (`Operator`, `TenantAdmin`).
-  - Multi-tenant database schema (`tenants`, `users`) and migration scripts in `apps/api-lambda`.
+  - Multi-tenant database schema (`tenants`, `users`) and migration scripts in `apps/worker-lambda`.
   - JIT user synchronization mapping Cognito `sub`, `email`, role group, and `custom:tenant_id` into Aurora PostgreSQL.
   - Backend authentication and tenant-scoping middleware enforcing tenant isolation for Tenant Admins and global access for Operators.
   - Registration/invitation confirmation and sign-in flows with Email OTP verification challenge.
@@ -45,8 +45,8 @@ Currently, `apps/api-lambda` relies on an in-memory mock repository without mult
 
 ## Boundary Candidates
 - **Seam 1: Infrastructure as Code (`infra/` or CDK package)**: Multi-tenant Cognito User Pool, custom attributes, groups, and client constructs.
-- **Seam 2: Multi-Tenant Database Layer (`apps/api-lambda/src/db/`)**: Schema definitions (`tenants`, `users`), connection management, and tenant-scoped repository operations.
-- **Seam 3: Authentication & Tenant Authorization Middleware (`apps/api-lambda/src/middleware/`)**: JWT verification, claim extraction, role resolution (`Operator` vs `TenantAdmin`), and tenant context injection.
+- **Seam 2: Multi-Tenant Database Layer (`apps/worker-lambda/src/db/`)**: Schema definitions (`tenants`, `users`), connection management, and tenant-scoped repository operations.
+- **Seam 3: Authentication & Tenant Authorization Middleware (`apps/worker-lambda/src/middleware/`)**: JWT verification, claim extraction, role resolution (`Operator` vs `TenantAdmin`), and tenant context injection.
 - **Seam 4: Admin Web Multi-Tenant Auth Feature (`apps/admin-web/src/features/auth/`)**: Sign-in, Email OTP challenge modal, tenant context awareness, and navigation guards.
 
 ## Out of Boundary

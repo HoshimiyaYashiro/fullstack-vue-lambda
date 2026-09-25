@@ -15,7 +15,7 @@ The repository is structured as a **Turborepo monorepo** with clear architectura
 **Purpose**: Independent deployable artifacts and entrypoints.
 - `apps/user-web`: Customer-facing web portal (Vite, Vue 3, port 3000).
 - `apps/admin-web`: Back-office management portal (Vite, Vue 3, port 3001).
-- `apps/api-lambda`: AWS Lambda backend handlers and local dev gateway (port 4000).
+- `apps/worker-lambda`: AWS Lambda backend handlers and local dev gateway (port 4000).
 
 ### Shared Workspace Packages (`packages/`)
 **Location**: `packages/`  
@@ -25,8 +25,8 @@ The repository is structured as a **Turborepo monorepo** with clear architectura
 - `packages/api-client`: Typed base HTTP client wrapper (`ApiHttpClient`) and re-exported TanStack Query core.
 - `packages/tsconfig`: Centralized TypeScript configurations (`base.json`, `vue.json`, `node.json`).
 
-### Serverless Backend Layering (`apps/api-lambda/src/`)
-**Location**: `apps/api-lambda/src/`  
+### Serverless Backend Layering (`apps/worker-lambda/src/`)
+**Location**: `apps/worker-lambda/src/`  
 **Purpose**: Modular backend with thin handlers and testable domain logic.
 - `handlers/`: Thin entrypoints wrapping execution with `withMiddleware` (HTTP transport adapter only).
 - `modules/<domain>/`: Domain-driven business services (`*.service.ts`) and data access layers (`*.repository.ts`).
@@ -75,7 +75,7 @@ import { formatLocalHelper } from './helpers';
 ## Code Organization Principles
 
 1. **No Cross-App Imports**: `apps/admin-web` and `apps/user-web` must never import directly from each other.
-2. **Strict Backend Decoupling**: `apps/api-lambda` must never depend on frontend libraries (Vue, Naive UI, router, DOM).
+2. **Strict Backend Decoupling**: `apps/worker-lambda` must never depend on frontend libraries (Vue, Naive UI, router, DOM).
 3. **Thin Handlers**: Handlers only parse input, call domain services, and return standardized responses.
 4. **Dumb UI Components**: Reusable components in `@repo/ui` receive state via props and notify via emits; they must not couple to Pinia stores or router state.
 
