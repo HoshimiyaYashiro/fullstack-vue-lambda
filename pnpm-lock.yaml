@@ -403,6 +403,58 @@ importers:
         specifier: ^3.3.11
         version: 3.3.11(typescript@6.0.3)
 
+  tools/floci:
+    dependencies:
+      '@aws-sdk/client-apigatewayv2':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-cloudwatch-logs':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-cognito-identity-provider':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-dynamodb':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-ecs':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-eventbridge':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-s3':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-ses':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-sns':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@aws-sdk/client-sqs':
+        specifier: ^3.1139.0
+        version: 3.1139.0
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+    devDependencies:
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.20.1
+      tsx:
+        specifier: ^4.19.3
+        version: 4.23.12
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
 packages:
 
   '@antfu/install-pkg@2.0.1':
@@ -2385,6 +2437,10 @@ packages:
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   drizzle-kit@0.31.11:
     resolution: {integrity: sha512-YCYqxTLIB2OCqf6w9/Vef13baBVbwQIPcbT4Y56AfO6B9ajZhDhD8Jkveg/hJvT/iuMloKD/IYYkyMMNhr7Kqg==}
@@ -5898,6 +5954,8 @@ snapshots:
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
+
+  dotenv@16.6.1: {}
 
   drizzle-kit@0.31.11:
     dependencies:

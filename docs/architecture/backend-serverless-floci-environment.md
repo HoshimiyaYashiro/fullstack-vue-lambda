@@ -82,24 +82,12 @@ fullstack-vue-lambda/
 │   └── floci/                         # Floci Local Cloud Emulation Engine
 │       ├── docker-compose.yml         # Floci container definition & volume bindings
 │       ├── .env.floci                 # Environment defaults for local AWS emulation
-│       ├── init/                      # Lifecycle hooks mounted to /etc/floci/init/ready.d/
-│       │   ├── 01-init-s3.sh          # S3 buckets creation & CORS policies
-│       │   ├── 02-init-dynamodb.sh    # DynamoDB tables, indexes & stream config
-│       │   ├── 03-init-cognito.sh     # Cognito User Pool, Client App, attributes & seed users
-│       │   ├── 04-init-sns-sqs.sh     # SNS topics, SQS queues & subscriptions
-│       │   ├── 05-init-eventbridge.sh # Custom Event Bus & rule targets
-│       │   ├── 06-init-ses.sh         # SES verified email identities & templates
-│       │   ├── 07-init-cloudwatch.sh  # CloudWatch log groups & retention policies
-│       │   ├── 08-init-aurora.sh      # Aurora PostgreSQL schema migration & seed data
-│       │   ├── 09-init-fargate.sh     # ECS cluster & task definitions registration
-│       │   └── 10-init-gateway.sh     # API Gateway HTTP API v2 routes & Lambda integrations
-│       ├── scripts/                   # Host management scripts (Cross-platform)
-│       │   ├── floci-up.ps1           # Windows PowerShell boot & health probe script
-│       │   ├── floci-up.sh            # Unix boot & health probe script
-│       │   ├── floci-down.ps1         # Teardown script (Windows)
-│       │   ├── floci-down.sh          # Teardown script (Unix)
-│       │   ├── floci-seed.ps1         # Re-seed trigger script (Windows)
-│       │   └── floci-seed.sh          # Re-seed trigger script (Unix)
+│       ├── package.json               # @repo/floci-tooling workspace package
+│       ├── src/
+│       │   ├── config.ts              # Shared Floci and seed configuration
+│       │   └── seed.ts                # Manual AWS SDK and PostgreSQL seeder
+│       ├── scripts/
+│       │   └── floci-runner.mjs       # Cross-platform Docker/CLI lifecycle runner
 │       └── data/                      # Persistent storage volume (gitignored)
 │
 ├── packages/
@@ -152,8 +140,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # Floci persistence layer
       - ./data:/app/data
-      # Initialization hooks executed once all AWS services are online
-      - ./init:/etc/floci/init/ready.d
     networks:
       - enterprise-network
 
@@ -163,20 +149,11 @@ networks:
     driver: bridge
 ```
 
-### 3.2 Automated Startup & Seeding (`tools/floci/init/`)
+### 3.2 Manual Startup & Seeding (`tools/floci/`)
 
-When `tools/floci/docker-compose.yml` boots, Floci automatically executes scripts in `/etc/floci/init/ready.d/` sequentially:
+`pnpm floci:up` starts Floci through Docker Compose when Docker is available, or through the native Floci CLI otherwise. It waits for the gateway health check and does not create development resources.
 
-1. **`01-init-s3.sh`**: Creates buckets (`app-public-assets`, `app-private-uploads`, `app-reports`) with CORS rules enabling web uploads.
-2. **`02-init-dynamodb.sh`**: Provisions `EnterpriseAppTable` with GSIs and DynamoDB Streams enabled.
-3. **`03-init-cognito.sh`**: Provisions User Pool, App Client (without secret), custom attribute `custom:tenant_id`, groups (`Operator`, `TenantAdmin`, `User`), and pre-populates initial test accounts.
-4. **`04-init-sns-sqs.sh`**: Provisions FIFO & Standard SNS topics, DLQ queues, and topic subscriptions.
-5. **`05-init-eventbridge.sh`**: Provisions `enterprise-event-bus` and routing rules.
-6. **`06-init-ses.sh`**: Registers verified test email identities (`noreply@enterprise.local`, `admin@enterprise.local`) and renders email templates.
-7. **`07-init-cloudwatch.sh`**: Configures log groups for Lambda, Fargate, and API Gateway with a 7-day retention policy.
-8. **`08-init-aurora.sh`**: Validates the PostgreSQL database `enterprise_db` and runs Drizzle migration SQL files.
-9. **`09-init-fargate.sh`**: Registers the local ECS cluster `enterprise-fargate-cluster` and task definition for worker tasks.
-10. **`10-init-gateway.sh`**: Configures the HTTP API v2 routes and links them to local Lambda handlers.
+After Floci is running, `pnpm floci:seed` checks the configured endpoint and invokes the same TypeScript seeder in both modes. The seeder uses AWS SDK v3 for emulated AWS services and `@repo/database` for PostgreSQL schema and sample data. Configuration is loaded from `tools/floci/.env.floci`, with existing shell environment variables taking precedence. No Bash, PowerShell, or Floci startup hook is used for initialization.
 
 ---
 
@@ -299,7 +276,7 @@ Integration into the root `package.json` gives developers single-command workflo
 | `pnpm floci:up` | Boots Floci container or native CLI and runs seed hooks |
 | `pnpm floci:down` | Gracefully shuts down Floci |
 | `pnpm floci:logs` | Streams live logs from Floci services |
-| `pnpm floci:seed` | Re-executes universal Node.js seeder against running Floci |
+| `pnpm floci:seed` | Manually runs the shared TypeScript seeder against running Floci |
 | `pnpm db:migrate` | Runs Drizzle ORM migrations against Aurora PostgreSQL |
 | `pnpm build:lambda` | Builds full Lambda suite (Common Layer + all handlers + ZIPs) |
 | `pnpm build:lambda:handlers` | Builds all discovered Lambda handlers |
@@ -316,11 +293,11 @@ Integration into the root `package.json` gives developers single-command workflo
 ## 6. Implementation Roadmap
 
 ### Phase 1: Local Cloud Emulation Harness (`tools/floci/`)
-1. Create `tools/floci/docker-compose.yml` with port bindings (`4566`, `5432`) and volume mounts (`docker.sock`, `./data`, `./init`).
+1. Create the `tools/floci` workspace package, Docker Compose configuration, and shared environment config.
 2. Create `.env.floci.example` and `.env.floci`.
-3. Create initialization scripts (`01-init-s3.sh` through `10-init-gateway.sh`) covering all 11 AWS services.
-4. Implement host control scripts (`floci-up.ps1` / `floci-up.sh` and `floci-down.ps1` / `floci-down.sh`) with health ping checking.
-5. Add root `package.json` commands (`floci:up`, `floci:down`, `floci:logs`, `floci:seed`).
+3. Implement one manual TypeScript/AWS SDK seeder for both Docker Compose and native CLI endpoints.
+4. Implement one Node.js host runner for Floci lifecycle commands and health checks.
+5. Keep root `package.json` commands (`floci:up`, `floci:down`, `floci:logs`, `floci:seed`) as developer entrypoints.
 
 ### Phase 2: Backend SDK & Database Integration (`apps/worker-lambda/`)
 1. Add AWS SDK v3 client dependencies (`@aws-sdk/client-*`) to `apps/worker-lambda`.

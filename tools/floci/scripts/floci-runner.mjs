@@ -6,17 +6,18 @@
  */
 
 import { execSync, spawn, spawnSync } from 'node:child_process';
-import { readdirSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { config as loadDotEnv } from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const FLOCI_DIR = path.resolve(__dirname, '..');
 const COMPOSE_FILE = path.join(FLOCI_DIR, 'docker-compose.yml');
-const INIT_DIR = path.join(FLOCI_DIR, 'init');
-const INIT_CONTAINER_DIR = '/opt/floci/manual-init';
+loadDotEnv({ path: path.join(FLOCI_DIR, '.env.floci') });
+
+const FLOCI_ENDPOINT = process.env.AWS_ENDPOINT_URL || 'http://localhost:4566';
 
 const action = process.argv[2] || 'up';
 
@@ -58,66 +59,32 @@ function checkHealth(endpoint = 'http://localhost:4566', timeoutMs = 25000) {
   });
 }
 
-const SEED_SCRIPT = path.join(__dirname, 'seed.mjs');
+async function runSeed() {
+  const seedArgs = process.argv.slice(3).filter((arg) => arg !== '--');
+  const isHelpRequest = seedArgs.includes('--help') || seedArgs.includes('-h');
 
-function runSeedScripts() {
-  if (isDockerRunning()) {
-    const inspect = spawnSync(
-      'docker',
-      ['inspect', '-f', '{{.State.Running}}', 'enterprise-floci'],
-      {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      }
-    );
-
-    if (inspect.status === 0 && inspect.stdout.trim() === 'true') {
-      const scripts = readdirSync(INIT_DIR)
-        .filter((file) => file.endsWith('.sh'))
-        .sort();
-
-      console.log('\n[Floci Seed] Running init scripts inside enterprise-floci...');
-      for (const script of scripts) {
-        const containerPath = `${INIT_CONTAINER_DIR}/${script}`;
-        console.log(`  -> Running ${script}...`);
-        const result = spawnSync(
-          'docker',
-          ['exec', 'enterprise-floci', '/bin/bash', containerPath],
-          { stdio: 'inherit' }
-        );
-
-        if (result.error) {
-          console.error(`[Floci Seed Error] Could not run ${script}: ${result.error.message}`);
-          process.exitCode = 1;
-          return;
-        }
-        if (result.status !== 0) {
-          process.exitCode = result.status ?? 1;
-          return;
-        }
-      }
-
-      console.log('\n✅ All Floci init scripts completed successfully.');
-      return;
-    }
-
+  if (!isHelpRequest) console.log(`\n[Floci Seed] Checking ${FLOCI_ENDPOINT}...`);
+  if (!isHelpRequest && !(await checkHealth(FLOCI_ENDPOINT, 5000))) {
     console.error(
-      '\n[Floci Seed Error] Docker is running, but enterprise-floci is not. Start it with "pnpm floci:up" first.'
+      '\n[Floci Seed Error] Floci is not responding. Start it with "pnpm floci:up" first.'
     );
     process.exitCode = 1;
     return;
   }
 
-  console.log(
-    '\n[Floci Seed] Running universal Node.js seeder against the native Floci endpoint...'
-  );
-  const result = spawnSync(process.execPath, [SEED_SCRIPT], {
+  const pnpmCmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+  const seedCommand = ['--filter', '@repo/floci-tooling', 'seed'];
+  if (seedArgs.length > 0) seedCommand.push('--', ...seedArgs);
+  const result = spawnSync(pnpmCmd, seedCommand, {
     stdio: 'inherit',
     env: process.env,
+    shell: process.platform === 'win32',
   });
 
   if (result.error) {
-    console.error(`[Floci Seed Error] Failed to run seed.mjs: ${result.error.message}`);
+    console.error(
+      `[Floci Seed Error] Could not start the TypeScript seeder: ${result.error.message}`
+    );
     process.exitCode = 1;
   } else if (result.status !== 0) {
     process.exitCode = result.status ?? 1;
@@ -172,7 +139,7 @@ async function handleUp() {
         console.log('\n✅ Floci is READY on port 4566!');
         console.log('   - AWS Gateway: http://localhost:4566');
         console.log('   - Aurora PostgreSQL: localhost:5432 (database: enterprise_db)');
-        console.log('   - Init scripts are manual: run "pnpm floci:seed" when ready.\n');
+        console.log('   - Resource seeding is manual: run "pnpm floci:seed" when ready.\n');
       } else {
         console.warn('⚠️ Floci did not respond in time. Check logs using: pnpm floci:logs\n');
       }
@@ -196,7 +163,7 @@ async function handleUp() {
 
       if (healthy) {
         console.log('\n✅ Floci CLI is running on http://localhost:4566!');
-        console.log('   -> Init scripts are manual: run "pnpm floci:seed" when ready.');
+        console.log('   -> Resource seeding is manual: run "pnpm floci:seed" when ready.');
       } else {
         console.warn('⚠️ Floci CLI did not respond in time.');
       }
@@ -253,7 +220,8 @@ function handleDoctor() {
   console.log(`Docker Running:   ${isDockerRunning() ? 'YES ✅' : 'NO ❌'}`);
   console.log(`Floci CLI Found:  ${isFlociCliAvailable() ? 'YES ✅' : 'NO ❌'}`);
   console.log(`Compose File:     ${COMPOSE_FILE}`);
-  console.log(`Init Scripts:     ${INIT_DIR}\n`);
+  console.log(`Floci Endpoint:   ${FLOCI_ENDPOINT}`);
+  console.log(`Seeder:           ${path.resolve(FLOCI_DIR, 'src/seed/index.ts')}\n`);
 }
 
 switch (action) {
@@ -267,7 +235,7 @@ switch (action) {
     handleLogs();
     break;
   case 'seed':
-    runSeedScripts();
+    runSeed();
     break;
   case 'doctor':
     handleDoctor();

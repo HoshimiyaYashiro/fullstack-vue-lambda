@@ -28,8 +28,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       # Floci persistence layer
       - ./data:/app/data
-      # Init scripts are run manually with `pnpm floci:seed`, never at startup.
-      - ./init:/opt/floci/manual-init:ro
     networks:
       - enterprise-floci-network
 

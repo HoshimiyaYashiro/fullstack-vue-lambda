@@ -1,17 +1,11 @@
 {
-  "name": "@repo/worker-lambda",
+  "name": "@repo/floci-tooling",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/local-server.ts",
-    "db:migrate": "tsx src/db/migrate.ts",
-    "build": "tsup",
-    "build:handlers": "tsup",
-    "build:handler": "tsup --env.HANDLER",
-    "build:layer": "tsx scripts/build-layer.ts",
-    "type-check": "tsc --noEmit",
-    "clean": "rimraf dist"
+    "seed": "tsx src/seed/index.ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-apigatewayv2": "^3.1139.0",
@@ -20,27 +14,16 @@
     "@aws-sdk/client-dynamodb": "^3.1139.0",
     "@aws-sdk/client-ecs": "^3.1139.0",
     "@aws-sdk/client-eventbridge": "^3.1139.0",
-    "@aws-sdk/client-lambda": "^3.1139.0",
     "@aws-sdk/client-s3": "^3.1139.0",
     "@aws-sdk/client-ses": "^3.1139.0",
     "@aws-sdk/client-sns": "^3.1139.0",
     "@aws-sdk/client-sqs": "^3.1139.0",
-    "@aws-sdk/lib-dynamodb": "^3.1139.0",
     "@repo/database": "workspace:*",
-    "@repo/shared": "workspace:*",
-    "drizzle-orm": "^0.45.3",
-    "postgres": "^3.4.9",
-    "zod": "^3.24.2"
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/archiver": "^8.0.0",
-    "@types/aws-lambda": "^8.10.147",
     "@types/node": "^22.13.9",
-    "archiver": "^8.0.0",
-    "drizzle-kit": "^0.31.11",
-    "rimraf": "^6.0.1",
-    "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^6.0.3"
   }
