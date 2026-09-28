@@ -20,10 +20,10 @@ if ($ContainerRunning) {
     Write-Host "[Mode: Container Exec] Re-running initialization hooks inside enterprise-floci..." -ForegroundColor Green
     $Files = Get-ChildItem -Path $InitDir -Filter "*.sh" | Sort-Object Name
     foreach ($File in $Files) {
-        Write-Host "  -> Running /etc/floci/init/ready.d/$($File.Name)..." -ForegroundColor Yellow
-        docker exec enterprise-floci /bin/bash "/etc/floci/init/ready.d/$($File.Name)"
+        Write-Host "  -> Running $($File.Name)..." -ForegroundColor Yellow
+        docker exec enterprise-floci /bin/bash "/opt/floci/manual-init/$($File.Name)"
     }
-    Write-Host "`n[SUCCESS] All 10 initialization hooks executed successfully." -ForegroundColor Green
+    Write-Host "`n[SUCCESS] All init scripts executed successfully." -ForegroundColor Green
 } else {
     Write-Host "[Mode: Universal Node.js] Executing seed.mjs directly via Node.js..." -ForegroundColor Yellow
     node "$PSScriptRoot\seed.mjs"

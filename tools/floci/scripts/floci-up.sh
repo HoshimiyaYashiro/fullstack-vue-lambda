@@ -25,7 +25,7 @@ if docker info >/dev/null 2>&1; then
       echo "✅ Floci is UP and running on port 4566!"
       echo "   - AWS Endpoint:       http://localhost:4566"
       echo "   - Aurora PostgreSQL:  localhost:5432 (enterprise_db)"
-      echo "   - Seed hooks:         /etc/floci/init/ready.d/ executed"
+      echo "   - Manual init:        Run 'pnpm floci:seed' when ready"
       echo ""
       exit 0
     fi

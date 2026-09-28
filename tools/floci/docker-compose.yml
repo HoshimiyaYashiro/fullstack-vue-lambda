@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   floci:
     container_name: enterprise-floci
     image: floci/floci:latest-compat
+    user: root
     ports:
       - '4566:4566'            # Standard AWS wire-protocol gateway
       - '5432:5432'            # Direct Aurora PostgreSQL port mapping
@@ -20,13 +19,17 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=enterprise_db
       - DEBUG=1
+      - FLOCI_SERVICES_UI_IMAGE=ghcr.io/ofsazib/floci-dash:latest
+      - FLOCI_SERVICES_UI_CONTAINER_NAME=floci-dash
+      - FLOCI_SERVICES_UI_ENDPOINT_ENV=FLOCI_URL
+      - FLOCI_SERVICES_UI_STATUS_PATH=/api/healthz
     volumes:
       # Docker socket required for Lambda and Fargate container execution
       - /var/run/docker.sock:/var/run/docker.sock
       # Floci persistence layer
       - ./data:/app/data
-      # Initialization hooks executed once all AWS services are online
-      - ./init:/etc/floci/init/ready.d
+      # Init scripts are run manually with `pnpm floci:seed`, never at startup.
+      - ./init:/opt/floci/manual-init:ro
     networks:
       - enterprise-floci-network
 

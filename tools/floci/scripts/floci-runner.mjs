@@ -6,6 +6,7 @@
  */
 
 import { execSync, spawn, spawnSync } from 'node:child_process';
+import { readdirSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,6 +16,7 @@ const __dirname = path.dirname(__filename);
 const FLOCI_DIR = path.resolve(__dirname, '..');
 const COMPOSE_FILE = path.join(FLOCI_DIR, 'docker-compose.yml');
 const INIT_DIR = path.join(FLOCI_DIR, 'init');
+const INIT_CONTAINER_DIR = '/opt/floci/manual-init';
 
 const action = process.argv[2] || 'up';
 
@@ -58,16 +60,89 @@ function checkHealth(endpoint = 'http://localhost:4566', timeoutMs = 25000) {
 
 const SEED_SCRIPT = path.join(__dirname, 'seed.mjs');
 
-async function runSeedScripts() {
-  console.log('\n[Floci Seed] Running universal Node.js seeder (Windows/macOS/Linux)...');
-  try {
-    spawnSync(process.execPath, [SEED_SCRIPT], {
-      stdio: 'inherit',
-      env: process.env,
-    });
-  } catch (err) {
-    console.error(`[Floci Seed Error] Failed to run seed.mjs: ${err.message}`);
+function runSeedScripts() {
+  if (isDockerRunning()) {
+    const inspect = spawnSync(
+      'docker',
+      ['inspect', '-f', '{{.State.Running}}', 'enterprise-floci'],
+      {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }
+    );
+
+    if (inspect.status === 0 && inspect.stdout.trim() === 'true') {
+      const scripts = readdirSync(INIT_DIR)
+        .filter((file) => file.endsWith('.sh'))
+        .sort();
+
+      console.log('\n[Floci Seed] Running init scripts inside enterprise-floci...');
+      for (const script of scripts) {
+        const containerPath = `${INIT_CONTAINER_DIR}/${script}`;
+        console.log(`  -> Running ${script}...`);
+        const result = spawnSync(
+          'docker',
+          ['exec', 'enterprise-floci', '/bin/bash', containerPath],
+          { stdio: 'inherit' }
+        );
+
+        if (result.error) {
+          console.error(`[Floci Seed Error] Could not run ${script}: ${result.error.message}`);
+          process.exitCode = 1;
+          return;
+        }
+        if (result.status !== 0) {
+          process.exitCode = result.status ?? 1;
+          return;
+        }
+      }
+
+      console.log('\n✅ All Floci init scripts completed successfully.');
+      return;
+    }
+
+    console.error(
+      '\n[Floci Seed Error] Docker is running, but enterprise-floci is not. Start it with "pnpm floci:up" first.'
+    );
+    process.exitCode = 1;
+    return;
   }
+
+  console.log(
+    '\n[Floci Seed] Running universal Node.js seeder against the native Floci endpoint...'
+  );
+  const result = spawnSync(process.execPath, [SEED_SCRIPT], {
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+  if (result.error) {
+    console.error(`[Floci Seed Error] Failed to run seed.mjs: ${result.error.message}`);
+    process.exitCode = 1;
+  } else if (result.status !== 0) {
+    process.exitCode = result.status ?? 1;
+  }
+}
+
+function getComposeCommand(composeArgs) {
+  const dockerArgs = ['compose', '-f', COMPOSE_FILE, ...composeArgs];
+  const hasNativeCompose =
+    process.platform !== 'win32' ||
+    spawnSync('docker', ['compose', 'version'], { stdio: 'ignore' }).status === 0;
+
+  if (hasNativeCompose) {
+    return { command: 'docker', args: dockerArgs };
+  }
+
+  const wslComposeFile = COMPOSE_FILE.replace(
+    /^([A-Za-z]):\\/,
+    (_, drive) => `/mnt/${drive.toLowerCase()}/`
+  ).replaceAll('\\', '/');
+
+  return {
+    command: 'wsl.exe',
+    args: ['--', 'docker', 'compose', '-f', wslComposeFile, ...composeArgs],
+  };
 }
 
 async function handleUp() {
@@ -81,9 +156,8 @@ async function handleUp() {
     console.log('[Mode: Docker Compose] Active Docker engine detected.');
     console.log('[Mode: Docker Compose] Starting Floci container with full 11-service parity...');
 
-    const upProcess = spawn('docker', ['compose', '-f', COMPOSE_FILE, 'up', '-d'], {
-      stdio: 'inherit',
-    });
+    const { command, args } = getComposeCommand(['up', '-d']);
+    const upProcess = spawn(command, args, { stdio: 'inherit' });
 
     upProcess.on('close', async (code) => {
       if (code !== 0) {
@@ -98,7 +172,7 @@ async function handleUp() {
         console.log('\n✅ Floci is READY on port 4566!');
         console.log('   - AWS Gateway: http://localhost:4566');
         console.log('   - Aurora PostgreSQL: localhost:5432 (database: enterprise_db)');
-        console.log('   - Initialization hooks (/etc/floci/init/ready.d) loaded automatically.\n');
+        console.log('   - Init scripts are manual: run "pnpm floci:seed" when ready.\n');
       } else {
         console.warn('⚠️ Floci did not respond in time. Check logs using: pnpm floci:logs\n');
       }
@@ -122,7 +196,7 @@ async function handleUp() {
 
       if (healthy) {
         console.log('\n✅ Floci CLI is running on http://localhost:4566!');
-        await runSeedScripts();
+        console.log('   -> Init scripts are manual: run "pnpm floci:seed" when ready.');
       } else {
         console.warn('⚠️ Floci CLI did not respond in time.');
       }
@@ -146,7 +220,8 @@ async function handleUp() {
 function handleDown() {
   if (isDockerRunning()) {
     console.log('[Floci Down] Stopping Docker compose...');
-    spawnSync('docker', ['compose', '-f', COMPOSE_FILE, 'down'], { stdio: 'inherit' });
+    const { command, args } = getComposeCommand(['down']);
+    spawnSync(command, args, { stdio: 'inherit' });
   }
 
   if (isFlociCliAvailable()) {
@@ -159,7 +234,8 @@ function handleDown() {
 
 function handleLogs() {
   if (isDockerRunning()) {
-    spawn('docker', ['compose', '-f', COMPOSE_FILE, 'logs', '-f'], { stdio: 'inherit' });
+    const { command, args } = getComposeCommand(['logs', '-f']);
+    spawn(command, args, { stdio: 'inherit' });
   } else if (isFlociCliAvailable()) {
     spawn('floci', ['logs'], { stdio: 'inherit' });
   } else {

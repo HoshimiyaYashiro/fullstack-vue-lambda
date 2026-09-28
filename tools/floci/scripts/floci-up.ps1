@@ -45,7 +45,7 @@ if ($DockerRunning) {
         Write-Host "`n[SUCCESS] Floci is UP and running on port 4566!" -ForegroundColor Green
         Write-Host "  - AWS Endpoint:       http://localhost:4566"
         Write-Host "  - Aurora PostgreSQL:  localhost:5432 (enterprise_db)"
-        Write-Host "  - Seed hooks:         /etc/floci/init/ready.d/ executed`n"
+        Write-Host "  - Manual init:        Run 'pnpm floci:seed' when ready`n"
     } else {
         Write-Warning "Floci did not respond within 25 seconds. Run 'pnpm floci:logs' to inspect logs."
     }
